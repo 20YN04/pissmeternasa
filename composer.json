@@ -1,0 +1,8 @@
+{
+  "name": "pissmeternasa/upa-dashboard",
+  "description": "ISS UPA Dashboard backend utilities",
+  "type": "project",
+  "require": {
+    "guzzlehttp/guzzle": "^7.8"
+  }
+}

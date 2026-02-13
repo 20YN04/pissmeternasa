@@ -54,7 +54,12 @@
         <span>NASA Lightstreamer</span>
         <span>Adapter: ISSLIVE</span>
         <span>Realtime telemetry</span>
-        <span id="debug" class="ml-auto text-xs text-black/25"></span>
+        <span>ISS: <strong class="text-black" id="iss-coords">—</strong></span>
+        <span>Altitude: <strong class="text-black" id="iss-alt">—</strong></span>
+        <span>Velocity: <strong class="text-black" id="iss-vel">—</strong></span>
+        <span>NASA: <strong class="text-black" id="nasa-title">—</strong></span>
+        <span class="ml-auto">WebSocket: <strong class="text-black" id="ws-status">—</strong></span>
+        <span id="debug" class="w-full text-xs text-black/25"></span>
       </footer>
 
     </div>

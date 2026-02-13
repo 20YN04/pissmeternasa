@@ -7,6 +7,7 @@ Real-time visualization of the International Space Station's wastewater tank lev
 - **Node.js** ≥ 18
 - **npm** ≥ 9
 - **PHP** ≥ 8.0 (with built-in server or Apache/Nginx)
+- **Composer** ≥ 2.5
 
 ## Installation
 
@@ -14,6 +15,7 @@ Real-time visualization of the International Space Station's wastewater tank lev
 git clone <your-repo-url>
 cd pissmeternasa
 npm install
+composer install
 ```
 
 ## Build
@@ -55,6 +57,15 @@ Live telemetry is streamed from NASA's public Lightstreamer server:
 | Urine Tank   | `NODE3000005`                      |
 | Waste Water  | `NODE3000008`                      |
 | Field        | `Value` (fill percentage)          |
+
+## Backend Utilities
+
+The PHP backend endpoint at `/api/telemetry.php` demonstrates:
+
+- **Guzzle** API calls (ISS position)
+- **cURL** for a simple web crawl (NASA homepage title)
+- **JSON parsing** with `json_decode`
+- **WebSocket** client on the frontend for status (echo server)
 
 ## Project Structure
 
