@@ -93,32 +93,33 @@ ISC
 
 ## Reflectie: Betrouwbaarheid & Beveiliging
 
-### Wat als de API down is?
+- **API down?** — Alles zit in aparte `try/catch` blokken. Als één API faalt draait de rest gewoon door. Geen data = streepje (`—`) in de UI, geen crash.
+- **Stale data** — De Lightstreamer status ("CONNECTED" / "SEARCHING FOR SIGNAL") en WebSocket status ("LIVE" / "RECONNECTING") geven aan of er nog verse data binnenkomt.
+- **Fallback values** — Tanks beginnen op `—`, ISS-coördinaten op `—`, NASA titel valt terug op "NASA.gov". De gebruiker ziet altijd iets.
+- **Geen secrets in JS** — Alle API's zijn publiek, er staan geen keys in de frontend. Mocht dat ooit nodig zijn, dan loopt het via de PHP backend.
+- **Input sanitization** — We gebruiken `textContent` ipv `innerHTML` (geen XSS), en PHP output gaat altijd door `json_encode`.
+- **Trust boundaries** — Drie zones: externe API's (niet te vertrouwen), PHP backend (jouw server), browser (publiek). Vertrouw nooit data van buiten.
 
-Daar heb ik tijdens het bouwen best veel over nagedacht. Je wilt niet dat je hele dashboard crasht omdat één externe API het even niet doet. Daarom heb ik het zo gebouwd dat alles in aparte `try/catch` blokken zit — zowel in de PHP backend als in de JavaScript. Als de ISS-positie API (`wheretheiss.at`) niet bereikbaar is, blijft de rest van het dashboard gewoon draaien. De Lightstreamer data voor de tanks komt via een compleet andere verbinding, dus die wordt er niet door geraakt. In de frontend staat er gewoon een streepje (`—`) als er geen data binnenkomt, in plaats van dat je een lege pagina of een error krijgt.
+---
 
-### Stale data indicators
+## AI-code die fout bleek
 
-Op dit moment is er nog geen expliciete "data is verouderd" melding ingebouwd, maar er zitten wel een paar dingen in die je helpen. De WebSocket status in de footer laat zien of de verbinding nog leeft (`LIVE`, `RECONNECTING`, etc.), en de Lightstreamer status bovenaan zegt `CONNECTED` of `SEARCHING FOR SIGNAL`. Als die op searching blijft staan, weet je dat er iets mis is. In een productie-omgeving zou ik er een timestamp aan toevoegen die laat zien wanneer de laatste update binnenkwam, zodat je kan zien of de data vers is.
+1. **`setDataAdapter("ISSLIVE")`** — "ISSLIVE" is de adapter *set*, niet de data adapter. Subscriptions werden stil geweigerd, geen errors, gewoon geen data. Pas na meerdere pogingen gevonden en verwijderd.
+2. **PHP gaf HTML errors ipv JSON** — Geen error handling rond `require autoload.php`. Als Composer niet geïnstalleerd was kreeg de frontend `<br /><b>Fatal error...` terug. Gefixed met `error_reporting(0)` en `file_exists()` check.
+3. **WebSocket URL offline** — `wss://echo.websocket.events` bestond niet meer. Vervangen door `wss://ws.postman-echo.com/raw` met auto-reconnect.
+4. **DOMDocument miste** — PHP `dom` extensie niet overal beschikbaar. Vervangen door simpele `preg_match` op `<title>`.
 
-### Fallback values
+**Les:** AI-code ziet er syntactisch correct uit maar kan semantisch fout zijn. Altijd zelf testen en documentatie checken.
 
-Overal waar data kan missen, staan er fallback waardes. De tank percentages beginnen op `—`, de ISS-coördinaten op `—`, en als de NASA crawler faalt verschijnt er gewoon "NASA.gov" als placeholder. Het idee is dat de gebruiker altijd iets ziet, ook al is de data tijdelijk niet beschikbaar. Niks is erger dan een leeg scherm.
+---
 
-### Security awareness: geen secrets in JS
+## Gebruikte technologieën
 
-Hier hoefde ik niet super veel over na te denken voor dit project specifiek, maar het is wel belangrijk om te benoemen. Alle API's die we aanroepen zijn publiek — NASA's Lightstreamer server en de ISS-positie API hebben geen API key nodig. Er staan dus geen geheime tokens of credentials in de JavaScript code. Dat is belangrijk omdat alles wat in je JS zit, door iedereen te lezen is via de browser devtools. Als je ooit wél een API key nodig hebt, moet die altijd via de PHP backend lopen zodat die nooit bij de client terecht komt.
-
-### Input sanitization
-
-De data die binnenkomt van de externe API's wordt niet zomaar in de DOM gegooid. In de JavaScript gebruiken we `textContent` in plaats van `innerHTML`, wat betekent dat eventuele HTML of script-tags in de data gewoon als tekst worden weergegeven en niet worden uitgevoerd. Dat voorkomt XSS-aanvallen. In de PHP backend wordt de output altijd door `json_encode` gehaald, wat automatisch escaping doet.
-
-### Trust boundaries
-
-Er zijn eigenlijk drie "zones" in dit project:
-
-1. **De externe API's** (NASA Lightstreamer, wheretheiss.at, nasa.gov) — hier heb je geen controle over. Je moet er vanuit gaan dat die data onverwacht kan zijn, traag kan zijn, of helemaal niet kan komen.
-2. **De PHP backend** — dit is jouw server. Hier verwerk je de data van de externe API's en stuur je het door naar de frontend. PHP errors worden onderdrukt zodat ze niet als HTML in je JSON response terechtkomen.
-3. **De browser/frontend** — dit is de client, en die vertrouw je nooit. Alles wat je naar de client stuurt is publiek. Daarom staan er geen secrets in de JS en wordt alle data netjes via `textContent` gerenderd.
-
-Het belangrijkste principe: vertrouw nooit data die van buiten je eigen server komt, en vertrouw nooit de client.
+| Technologie | Wat het is | Waar in het project |
+|---|---|---|
+| **cURL** | Low-level PHP HTTP client, zit standaard in PHP | `api/telemetry.php` — crawlt nasa.gov |
+| **Guzzle** | High-level PHP HTTP client bovenop cURL (via Composer) | `api/telemetry.php` — ISS positie API |
+| **JSON parser** | `json_decode`/`json_encode` (PHP), `.json()`/`JSON.parse` (JS) | Overal voor API communicatie |
+| **WebSockets** | Tweezijdige open verbinding tussen browser en server | `src/main.js` — live verbindingsstatus |
+| **Crawler** | Script dat een webpagina ophaalt en data eruit parst | `api/telemetry.php` — NASA homepage title |
+| **API calls** | HTTP requests naar endpoints die JSON teruggeven | PHP (Guzzle → wheretheiss.at) + JS (fetch) |
