@@ -2,8 +2,10 @@ import { LightstreamerClient, Subscription } from "lightstreamer-client-web";
 import "./style.css";
 
 const statusEl = document.getElementById("status");
-const liquidEl = document.getElementById("liquid");
-const percentageEl = document.getElementById("percentage");
+const liquidUrineEl = document.getElementById("liquid-urine");
+const percentageUrineEl = document.getElementById("percentage-urine");
+const liquidWasteEl = document.getElementById("liquid-waste");
+const percentageWasteEl = document.getElementById("percentage-waste");
 
 const client = new LightstreamerClient(
   "https://push.lightstreamer.com",
@@ -12,25 +14,29 @@ const client = new LightstreamerClient(
 
 client.connectionDetails.setAdapterSet("ISSLIVE");
 
-const subscription = new Subscription("MERGE", "NODE3000005", ["Value"]);
+const subscription = new Subscription(
+  "MERGE",
+  ["NODE3000005", "NODE3000008"],
+  ["Value"]
+);
 subscription.setRequestedSnapshot("yes");
 
-const updateLevel = (rawValue) => {
+const updateLevel = (rawValue, liquidTarget, percentageTarget) => {
   const numericValue = Number.parseFloat(rawValue);
   if (Number.isNaN(numericValue)) {
     return;
   }
 
   const clamped = Math.max(0, Math.min(100, numericValue));
-  liquidEl.style.height = `${clamped}%`;
-  percentageEl.textContent = `${clamped.toFixed(1)}%`;
+  liquidTarget.style.height = `${clamped}%`;
+  percentageTarget.textContent = `${clamped.toFixed(1)}%`;
 };
 
 const setStatus = (status) => {
   const isConnected = status.startsWith("CONNECTED");
   statusEl.textContent = isConnected ? "CONNECTED" : "SEARCHING FOR SIGNAL";
-  statusEl.classList.toggle("is-connected", isConnected);
-  statusEl.classList.toggle("is-searching", !isConnected);
+  statusEl.classList.toggle("status-connected", isConnected);
+  statusEl.classList.toggle("status-searching", !isConnected);
 };
 
 client.addListener({
@@ -42,7 +48,12 @@ client.addListener({
 subscription.addListener({
   onItemUpdate: (updateInfo) => {
     const value = updateInfo.getValue("Value");
-    updateLevel(value);
+    const itemName = updateInfo.getItemName();
+    if (itemName === "NODE3000005") {
+      updateLevel(value, liquidUrineEl, percentageUrineEl);
+    } else if (itemName === "NODE3000008") {
+      updateLevel(value, liquidWasteEl, percentageWasteEl);
+    }
   },
 });
 
