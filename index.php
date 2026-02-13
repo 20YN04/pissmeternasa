@@ -6,61 +6,58 @@
     <title>ISS UPA Dashboard</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="dist/assets/main.css" />
   </head>
-  <body class="min-h-screen flex items-center justify-center px-6 py-12 bg-black text-white">
-    <main class="w-full max-w-6xl rounded-3xl border border-white/15 bg-white p-8 md:p-12 grid gap-10 shadow-2xl text-black">
-      <header class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+  <body class="min-h-screen bg-white text-black font-display">
+
+    <div class="max-w-7xl mx-auto px-6 md:px-12 py-16 md:py-24">
+
+      <!-- Header -->
+      <header class="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-16">
         <div>
-          <span class="text-xs tracking-[0.4em] uppercase text-black/50">ISS UPA</span>
-          <h1 class="text-3xl md:text-4xl font-semibold text-black">Urine Processor Assembly</h1>
+          <p class="text-[11px] tracking-[0.5em] uppercase text-black/40 mb-2">International Space Station</p>
+          <h1 class="text-5xl md:text-7xl font-bold leading-[0.95] tracking-tight text-black">
+            Urine Processor<br/>Assembly
+          </h1>
         </div>
         <div id="status" class="status-pill status-searching">SEARCHING FOR SIGNAL</div>
       </header>
 
-      <section class="grid gap-8 lg:grid-cols-2">
-        <div class="grid gap-6">
-          <div class="tank-frame h-[360px] bg-white">
+      <!-- Tanks -->
+      <section class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
+
+        <!-- Urine Tank -->
+        <div>
+          <div class="tank-frame h-[400px] mb-6">
             <div id="liquid-urine" class="tank-liquid liquid-yellow"></div>
           </div>
-          <div class="grid gap-2">
-            <div class="text-xs tracking-[0.4em] uppercase text-black/50">URINE (UPA)</div>
-            <div id="percentage-urine" class="text-4xl md:text-5xl text-black">--%</div>
-            <div class="text-sm text-black/60">Sensor: NODE3000005</div>
-          </div>
+          <p class="text-[11px] tracking-[0.5em] uppercase text-black/40 mb-1">Urine (UPA)</p>
+          <p id="percentage-urine" class="text-6xl md:text-8xl font-extrabold tracking-tighter text-black leading-none">—</p>
+          <p class="text-sm text-black/40 mt-2">NODE3000005</p>
         </div>
 
-        <div class="grid gap-6">
-          <div class="tank-frame h-[360px] bg-white">
+        <!-- Waste Water Tank -->
+        <div>
+          <div class="tank-frame h-[400px] mb-6">
             <div id="liquid-waste" class="tank-liquid liquid-green"></div>
           </div>
-          <div class="grid gap-2">
-            <div class="text-xs tracking-[0.4em] uppercase text-black/50">WASTE WATER</div>
-            <div id="percentage-waste" class="text-4xl md:text-5xl text-black">--%</div>
-            <div class="text-sm text-black/60">Sensor: NODE3000008</div>
-          </div>
+          <p class="text-[11px] tracking-[0.5em] uppercase text-black/40 mb-1">Waste Water</p>
+          <p id="percentage-waste" class="text-6xl md:text-8xl font-extrabold tracking-tighter text-black leading-none">—</p>
+          <p class="text-sm text-black/40 mt-2">NODE3000008</p>
         </div>
+
       </section>
 
-      <section class="grid gap-4 md:grid-cols-3">
-        <div class="rounded-2xl border border-black/10 bg-white px-5 py-4">
-          <div class="text-xs tracking-[0.3em] uppercase text-black/50">Feed</div>
-          <div class="text-base text-black">NASA Lightstreamer</div>
-        </div>
-        <div class="rounded-2xl border border-black/10 bg-white px-5 py-4">
-          <div class="text-xs tracking-[0.3em] uppercase text-black/50">Adapter</div>
-          <div class="text-base text-black">ISSLIVE</div>
-        </div>
-        <div class="rounded-2xl border border-black/10 bg-white px-5 py-4">
-          <div class="text-xs tracking-[0.3em] uppercase text-black/50">Items</div>
-          <div class="text-base text-black">NODE3000005 · NODE3000008</div>
-        </div>
-      </section>
-    </main>
+      <!-- Footer -->
+      <footer class="border-t border-black/10 pt-8 flex flex-wrap gap-x-12 gap-y-4 text-sm text-black/40">
+        <span>NASA Lightstreamer</span>
+        <span>Adapter: ISSLIVE</span>
+        <span>Realtime telemetry</span>
+        <span id="debug" class="ml-auto text-xs text-black/25"></span>
+      </footer>
+
+    </div>
 
     <script type="module" src="dist/assets/main.js"></script>
   </body>

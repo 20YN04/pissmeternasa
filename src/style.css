@@ -8,48 +8,43 @@
   }
 
   body {
-    @apply bg-black text-white font-display;
+    @apply bg-white text-black font-display antialiased;
   }
 }
 
 @layer components {
   .tank-frame {
-    @apply relative overflow-hidden rounded-2xl border border-black/10;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
-  }
-
-  .tank-frame::after {
-    content: "";
-    position: absolute;
-    inset: 12px;
-    border: 1px dashed rgba(0, 0, 0, 0.12);
-    border-radius: 16px;
+    @apply relative overflow-hidden rounded-3xl bg-neutral-50 border border-black/[0.06];
   }
 
   .tank-liquid {
-    @apply absolute bottom-0 left-0 right-0 transition-all duration-700 ease-out;
+    @apply absolute bottom-0 left-0 right-0 transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)];
     height: 0%;
   }
 
   .liquid-yellow {
-    background: linear-gradient(180deg, rgba(244, 208, 63, 0.92), rgba(244, 208, 63, 0.4));
-    box-shadow: 0 -6px 18px rgba(244, 208, 63, 0.5);
+    background: #f4d03f;
   }
 
   .liquid-green {
-    background: linear-gradient(180deg, rgba(51, 255, 51, 0.88), rgba(51, 255, 51, 0.35));
-    box-shadow: 0 -6px 18px rgba(51, 255, 51, 0.45);
+    background: #33ff33;
   }
 
   .status-pill {
-    @apply px-4 py-2 rounded-full text-xs tracking-[0.25em] border transition;
+    @apply px-5 py-2 rounded-full text-[11px] tracking-[0.35em] uppercase border transition-all duration-300;
   }
 
   .status-connected {
-    @apply text-white bg-black border-black shadow-[0_6px_18px_rgba(0,0,0,0.2)];
+    @apply text-black bg-white border-black;
   }
 
   .status-searching {
-    @apply text-black bg-white border-black/40 shadow-[0_6px_18px_rgba(0,0,0,0.12)];
+    @apply text-black/50 bg-white border-black/20;
+    animation: pulse-border 2s ease-in-out infinite;
   }
+}
+
+@keyframes pulse-border {
+  0%, 100% { border-color: rgba(0,0,0,0.2); }
+  50% { border-color: rgba(0,0,0,0.5); }
 }
