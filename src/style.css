@@ -26,8 +26,52 @@
     background: #f4d03f;
   }
 
+  .liquid-yellow::before,
+  .liquid-green::before {
+    content: "";
+    position: absolute;
+    top: -20px;
+    left: -50%;
+    width: 200%;
+    height: 40px;
+    border-radius: 45%;
+    animation: wave 3s ease-in-out infinite;
+  }
+
+  .liquid-yellow::before {
+    background: rgba(244, 208, 63, 0.5);
+  }
+
+  .liquid-yellow::after {
+    content: "";
+    position: absolute;
+    top: -14px;
+    left: -50%;
+    width: 200%;
+    height: 34px;
+    border-radius: 42%;
+    background: rgba(244, 208, 63, 0.3);
+    animation: wave 2.2s ease-in-out infinite reverse;
+  }
+
   .liquid-green {
     background: #33ff33;
+  }
+
+  .liquid-green::before {
+    background: rgba(51, 255, 51, 0.45);
+  }
+
+  .liquid-green::after {
+    content: "";
+    position: absolute;
+    top: -14px;
+    left: -50%;
+    width: 200%;
+    height: 34px;
+    border-radius: 42%;
+    background: rgba(51, 255, 51, 0.25);
+    animation: wave 2.4s ease-in-out infinite reverse;
   }
 
   .status-pill {
@@ -47,4 +91,10 @@
 @keyframes pulse-border {
   0%, 100% { border-color: rgba(0,0,0,0.2); }
   50% { border-color: rgba(0,0,0,0.5); }
+}
+
+@keyframes wave {
+  0%   { transform: rotate(0deg) translateX(0); }
+  50%  { transform: rotate(3deg) translateX(4%); }
+  100% { transform: rotate(0deg) translateX(0); }
 }
