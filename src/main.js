@@ -14,15 +14,17 @@ const client = new LightstreamerClient(
 
 client.connectionDetails.setAdapterSet("ISSLIVE");
 
-const subscription = new Subscription(
-  "MERGE",
-  ["NODE3000005", "NODE3000008"],
-  ["Value"]
-);
-subscription.setRequestedSnapshot("yes");
+const urineSubscription = new Subscription("MERGE", "NODE3000005", ["Value"]);
+urineSubscription.setDataAdapter("ISSLIVE");
+urineSubscription.setRequestedSnapshot("yes");
+
+const wasteSubscription = new Subscription("MERGE", "NODE3000008", ["Value"]);
+wasteSubscription.setDataAdapter("ISSLIVE");
+wasteSubscription.setRequestedSnapshot("yes");
 
 const updateLevel = (rawValue, liquidTarget, percentageTarget) => {
-  const numericValue = Number.parseFloat(rawValue);
+  const cleanedValue = rawValue?.toString().replace(/%/g, "").trim();
+  const numericValue = Number.parseFloat(cleanedValue);
   if (Number.isNaN(numericValue)) {
     return;
   }
@@ -45,17 +47,32 @@ client.addListener({
   },
 });
 
-subscription.addListener({
+urineSubscription.addListener({
   onItemUpdate: (updateInfo) => {
-    const value = updateInfo.getValue("Value");
-    const itemName = updateInfo.getItemName();
-    if (itemName === "NODE3000005") {
-      updateLevel(value, liquidUrineEl, percentageUrineEl);
-    } else if (itemName === "NODE3000008") {
-      updateLevel(value, liquidWasteEl, percentageWasteEl);
-    }
+    const value = updateInfo.getValue("Value") ?? updateInfo.getValue("value") ?? updateInfo.getValue(1);
+    updateLevel(value, liquidUrineEl, percentageUrineEl);
+  },
+  onSubscriptionError: (code, message) => {
+    statusEl.textContent = `SIGNAL ERROR ${code}`;
+    statusEl.classList.add("status-searching");
+    statusEl.classList.remove("status-connected");
+    console.warn(message);
   },
 });
 
-client.subscribe(subscription);
+wasteSubscription.addListener({
+  onItemUpdate: (updateInfo) => {
+    const value = updateInfo.getValue("Value") ?? updateInfo.getValue("value") ?? updateInfo.getValue(1);
+    updateLevel(value, liquidWasteEl, percentageWasteEl);
+  },
+  onSubscriptionError: (code, message) => {
+    statusEl.textContent = `SIGNAL ERROR ${code}`;
+    statusEl.classList.add("status-searching");
+    statusEl.classList.remove("status-connected");
+    console.warn(message);
+  },
+});
+
+client.subscribe(urineSubscription);
+client.subscribe(wasteSubscription);
 client.connect();

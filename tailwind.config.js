@@ -4,7 +4,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        display: ["Orbitron", "ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
+        display: ["Inter", "ui-sans-serif", "system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"],
       },
       colors: {
         hud: {
